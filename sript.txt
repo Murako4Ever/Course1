@@ -1,0 +1,295 @@
+<Window x:Class="PReg.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d3="http://research.microsoft.com/DynamicDataDisplay/1.0"
+        Title="Регуляризация для начальных данных tsin(PI*t)" Height="533.757" Width="725.695">
+    <Grid Margin="0,0,2,1">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="229*"/>
+            <RowDefinition Height="161*"/>
+        </Grid.RowDefinitions>
+        <Button x:Name="ButtonS" Content="Модельный" HorizontalAlign-ment="Left" Margin="10,15,0,0" VerticalAlignment="Top" Width="75" Click="ButtonS_Click" RenderTransformOrigin="-1.671,-1.916" Height="57"/>
+
+        <d3:MouseNavigation HorizontalAlignment="Left" Height="100" Mar-gin="44,182,0,0" VerticalAlignment="Top" Width="100" Grid.RowSpan="2"/>
+        <d3:ChartPlotter Name="plotter" Margin="95,84,10,10" Grid.RowSpan="2">
+            <d3:ChartPlotter.HorizontalAxis>
+                <d3:HorizontalAxis Name="xAxis" />
+            </d3:ChartPlotter.HorizontalAxis>
+            <d3:ChartPlotter.VerticalAxis>
+                <d3:VerticalAxis Name="yAxis" />
+            </d3:ChartPlotter.VerticalAxis>
+            <d3:CursorCoordinateGraph Margin="0">
+            </d3:CursorCoordinateGraph>
+           
+            
+            <d3:HorizontalAxisTitle x:Name="HorizontalAxisTitle1" Con-tent="t" FontFamily="Georgia" d3:Plotter.IsDefaultElement="True"/>
+            <d3:VerticalAxisTitle x:Name="VerticalAxisTitle1" Content="U" FontFamily="Georgia" d3:Plotter.IsDefaultElement="True"/>
+        </d3:ChartPlotter>
+        <TextBox x:Name="TTn" HorizontalAlignment="Right" Height="23" Mar-gin="0,10,210,0" TextWrapping="Wrap" Text="40" VerticalAlignment="Top" Width="36" FontFamily="Georgia" FontSize="16" RenderTrans-formOrigin="1.222,0.609"/>
+        <TextBox x:Name="TReg" Height="23" Margin="0,47,23,0" TextWrap-ping="Wrap" Text="20" VerticalAlignment="Top" HorizontalAlignment="Right" Width="73" FontFamily="Georgia" FontSize="16"/>
+        <Label Content="Число узлов" Margin="0,10,101,0" VerticalAlign-ment="Top" HorizontalAlignment="Right" Width="109" FontFamily="Georgia" FontSize="16"/>
+        <Label Content="Параметр регуляризации" HorizontalAlignment="Right" Margin="0,44,101,0" VerticalAlignment="Top" Width="204" FontFami-ly="Georgia" FontSize="16"/>
+        <Label Content="Продолжить нулем до Т=" HorizontalAlignment="Right" Margin="0,10,246,0" VerticalAlignment="Top" Width="198" FontFami-ly="Georgia" FontSize="16"/>
+        <TextBox x:Name="Tx0" Height="23" Margin="42,117,0,0" TextWrap-ping="Wrap" Text="2,01" VerticalAlignment="Top" FontFamily="Georgia" Font-Size="16" HorizontalAlignment="Left" Width="39"/>
+        <TextBox x:Name="Tdelta" HorizontalAlignment="Right" Height="23" Margin="0,48,305,0" TextWrapping="Wrap" Text="0,01" VerticalAlignment="Top" Width="55" RenderTransformOrigin="-0.129,-1.113" FontFamily="Georgia" Font-Size="16"/>
+        <Label Content="r1=" Margin="8,113,0,0" VerticalAlignment="Top" RenderTransformOrigin="1.08,0.406" FontFamily="Georgia" FontSize="16" Hori-zontalAlignment="Left" Width="34"/>
+        <Label Content="delta=" HorizontalAlignment="Right" Mar-gin="0,44,365,0" VerticalAlignment="Top" FontFamily="Georgia" FontSize="16" RenderTransformOrigin="-0.091,0.464"/>
+        <Label Content="r0=" Margin="8,85,0,0" VerticalAlignment="Top" FontFamily="Georgia" FontSize="16" HorizontalAlignment="Left" Width="37"/>
+        <TextBox x:Name="TRl" Height="23" Margin="42,89,0,0" TextWrap-ping="Wrap" Text="2" VerticalAlignment="Top" FontFamily="Georgia" Font-Size="16" HorizontalAlignment="Left" Width="39"/>
+        <Label Content="r2=" Margin="8,140,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.148,-0.255" FontFamily="Georgia" FontSize="16" HorizontalAlignment="Left" Width="36"/>
+        <TextBox x:Name="TRr" Height="23" Margin="42,145,0,0" TextWrap-ping="Wrap" Text="2,02" VerticalAlignment="Top" FontFamily="Georgia" Font-Size="16" HorizontalAlignment="Left" Width="39"/>
+        <ComboBox x:Name="СomboN" HorizontalAlignment="Right" Mar-gin="0,10,23,0" VerticalAlignment="Top" Width="73" FontFamily="Georgia" FontSize="16" SelectedIndex="4">
+        <TextBlock>512</TextBlock>
+        <TextBlock>1024</TextBlock>
+        <TextBlock>2048</TextBlock>
+        <TextBlock>4096</TextBlock>
+        <TextBlock>8192</TextBlock>
+        <TextBlock>16384</TextBlock>
+        </ComboBox>
+        <Label Content="Погрешность" HorizontalAlignment="Right" Mar-gin="0,10,477,0" VerticalAlignment="Top" Width="120" FontFamily="Georgia" FontSize="16"/>
+        <TextBox x:Name="Tdelta_Copy" HorizontalAlignment="Right" Height="23" Margin="0,49,477,0" TextWrapping="Wrap" Text="0,01" VerticalA-lignment="Top" Width="120" RenderTransformOrigin="-0.129,-1.113" FontFami-ly="Georgia" FontSize="16"/>
+
+    </Grid>
+</Window>
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using Microsoft.Research.DynamicDataDisplay;
+using Microsoft.Research.DynamicDataDisplay.DataSources.MultiDimensional;
+using Microsoft.Research.DynamicDataDisplay.Common.Auxiliary;
+using Microsoft.Research.DynamicDataDisplay.DataSources;
+using Microsoft.Research.DynamicDataDisplay.Charts;
+using System.Numerics;
+
+namespace PReg
+{
+    
+    public partial class MainWindow : Window
+    {
+
+        
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        public void Par(double[] input, double s, double a, double b, dou-ble t, double x0, ref double[] output, int m)
+        {
+            double aa, bb, cc;
+
+            int n = 200;
+
+            double h = (b - a) / (n - 1);
+            double tay = t / (m - 1);
+
+            double[,]  array = new double[m, n];
+
+            double[] alpha = new double[n - 1];
+            double[] beta = new double[n - 1];
+
+            
+                for (int i = 0; i < n; i++)
+                {
+                    
+                    array[0, i] = 0; 
+                }
+            
+
+            for (int i = 0; i < m -1 ; i++)
+            {
+               
+
+                alpha[0] = 0;
+                beta[0] = input[i];
+                for (int j = 1; j < n - 1; j++)
+                    {
+                        aa = -tay * s * s / (2 * h * (a + j * h)) - tay * s * s / (h * h);
+                        bb = 2 * s * s * tay / (h * h) + 1;
+                        cc = tay * s * s / (2 * h * (a + j * h)) - tay * s * s / (h * h);
+
+                        alpha[j] = -aa / (bb + cc * alpha[j - 1]);
+                        beta[j] = (array[i, j] - cc * beta[j - 1]) / (bb + cc * alpha[j - 1]);
+                        
+                    }
+                array[i + 1, n - 1] = 0;
+
+               
+
+                for (int k = n - 2; k >= 0; k--)
+                    array[i + 1, k] = alpha[k] * array[i + 1, k + 1] + be-ta[k];
+
+
+            }
+
+            int ot = Convert.ToInt32((n - 1) * (x0 - a) / (b - a));
+
+            for (int i = 0; i < m; i++)
+            {
+                output[i] = array[i, ot];
+            }
+
+        }
+
+
+        public double Alpha(double x)
+        {
+            return x / Math.Sqrt(2) - Math.PI / (double)8 - (double)1 / (double)8 / Math.Sqrt(2 * x) - (double)1 / (double)16 / x / x - (double)25 / (double)384 / Math.Sqrt(2 * x * x * x);
+        }
+
+        public double Beta(double x)
+        {
+            return x / Math.Sqrt(2) + (double)1 / (double)8 / Math.Sqrt(2 * x) - (double)25 / (double)384 / Math.Sqrt(2 * x * x * x) - (double)13 / (double)128 / x / x / x / x;
+        }
+
+        public double Gamma(double x)
+        {
+            return -x / Math.Sqrt(2) - Math.PI / (double)8 + (double)1 / (double)8 / Math.Sqrt(2 * x) - (double)1 / (double)16 / x / x + (double)25 / (double)384 / Math.Sqrt(2 * x * x * x);
+        }
+
+        public double Delta(double x)
+        {
+            return -x / Math.Sqrt(2) - (double)1 / (double)8 / Math.Sqrt(2 * x) + (double)25 / (double)384 / Math.Sqrt(2 * x * x * x) - (double)13 / (double)128 / x / x / x / x;
+        }
+
+        public Complex OperatorT(double R, double a, double r0, double r1, double r2, double tau)
+        {
+            double arg = Math.Sqrt(tau) / a;
+            
+
+            double A1 = Math.Exp(Beta(arg * r2) + Delta(arg * r0)) * Math.Cos(Alpha(arg * r2) + Gamma(arg * r0)) -
+                Math.Exp(Beta(arg * r0) + Delta(arg * r2)) * Math.Cos(Alpha(arg * r0) + Gamma(arg * r2));
+            double B1 = Math.Exp(Beta(arg * r2) + Delta(arg * r0)) * Math.Sin(Alpha(arg * r2) + Gamma(arg * r0)) -
+                Math.Exp(Beta(arg * r0) + Delta(arg * r2)) * Math.Sin(Alpha(arg * r0) + Gamma(arg * r2));
+
+            double A2 = Math.Exp(Beta(arg * r2) + Delta(arg * r1)) * Math.Cos(Alpha(arg * r2) + Gamma(arg * r1)) -
+                Math.Exp(Beta(arg * r1) + Delta(arg * r2)) * Math.Cos(Alpha(arg * r1) + Gamma(arg * r2));
+            double B2 = Math.Exp(Beta(arg * r2) + Delta(arg * r1)) * Math.Sin(Alpha(arg * r2) + Gamma(arg * r1)) -
+                Math.Exp(Beta(arg * r1) + Delta(arg * r2)) * Math.Sin(Alpha(arg * r1) + Gamma(arg * r2));
+            Complex T;
+           
+            if (tau > R) { T = new Complex(0, 0); } // применение параметра регуляризации
+            else
+            {
+                T = new Complex(
+                Math.Sqrt(r1 / r0) * (A1 * A2 + B1 * B2) / (A2 * A2 + B2 * B2),
+                Math.Sqrt(r1 / r0) * (B1 * A2 - A1 * B2) / (A2 * A2 + B2 * B2));
+            }
+            return T;
+        }
+
+        private void ButtonS_Click(object sender, RoutedEventArgs e)
+        {
+            
+            int n = Convert.ToInt32(СomboN.Text); // число узлов разбиения временного отрезка
+
+            Complex[] a1 = new Complex[n];
+            Complex[] a2 = new Complex[n];
+            Complex[] a3 = new Complex[n];
+            
+            double [] r1 = new double[n];
+            double [] r2 = new double[n];
+            double[] r3 = new double[n];
+
+            double TT = Convert.ToDouble(TTn.Text); // длина временного от-резка
+
+            double dispT = 1;
+            
+            double h = (double)TT / (n - 1); //шаг разбиения
+            
+            double[] tS = new double[n];
+            double[] Fs = new double[n];
+
+            double delta = Convert.ToDouble(Tdelta.Text);
+            
+            Random r = new Random();
+            
+            for (int i = 0; i <= n - 1; i++)
+            {
+                tS[i] = i * h;
+                r1[i] = tS[i] * Math.Sin(Math.PI * tS[i]); // функция из модельного примера
+                if (tS[i] > 1) r1[i] = 0;
+            }
+            double x0 = Convert.ToDouble(Tx0.Text);
+            double rl = Convert.ToDouble(TRl.Text);
+            double rr = Convert.ToDouble(TRr.Text);
+
+            Par(r1, 1, rl, rr, TT, x0, ref r2, n);
+            for (int i = 0; i <= n - 1; i++)
+            { 
+                double temp = -1 + 2 * r.NextDouble();
+                double dt = delta * temp / Math.Sqrt(TT);
+                a1[i] = new Complex(r2[i] + dt, 0);
+            }
+ 
+            a1 = FFT(a1);
+
+            double td = 7 * n / TT;
+
+            double th = (double)td / (n - 1); 
+            double R = Convert.ToDouble(TReg.Text);    
+            double teps = 0.01;
+        
+            for (int i = 0; i <= n - 1; i++)
+            { 
+                Complex T2 = new Complex();
+                T2 = OperatorT(R, 1, rl, x0, rr, teps + i * th);
+                a2[i] = new Complex(a1[i].Real * T2.Real - a1[i].Imaginary * T2.Imaginary, a1[i].Real * T2.Imaginary + a1[i].Imaginary * T2.Real);
+            }
+
+            a2 = IFFT(a2);
+
+            for (int i = 0; i <= n - 1; i++)
+            {
+                r3[i] = 2*a2[i].Real; 
+            }
+
+            double oooT = dispT / TT;
+
+            int dispN = (int)(n * oooT);
+
+            double ssum = 0;
+
+            for (int i = 0; i < n; i++)
+            {
+
+                ssum += Math.Abs(r3[i] - r1[i]) * Math.Abs(r3[i] - r1[i]);
+            }
+
+            ssum = Math.Sqrt(ssum * dispT / dispN);
+
+            Tdelta_Copy.Text = ssum.ToString();
+
+            plotter.Children.RemoveAll(typeof(LineGraph));
+            
+            var X = tS.AsXDataSource();
+            var Y = r3.AsYDataSource();
+            var FS = r1.AsYDataSource();
+
+            CompositeDataSource compositeDataSource = X.Join(Y);
+            CompositeDataSource compositeDataSourceF = X.Join(FS);
+
+            Pen dashed = new Pen(Brushes.Black, 2);
+            dashed.DashStyle = DashStyles.Dash;
+            plotter.AddLineGraph(compositeDataSource, dashed, new PenDe-scription("*"));
+
+            plotter.AddLineGraph(compositeDataSourceF, Colors.Black, 2, "*");
+
+            Rect visible = new Rect(0, -0.05, dispT, 0.7);
+            plotter.Viewport.Visible = visible;
+
+
+        }
+    }
+    
+}
